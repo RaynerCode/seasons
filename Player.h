@@ -6,8 +6,12 @@ public:
     Player();
     ~Player() = default;
 
+    void MoveByVelocity();
+
+    void Draw(sf::RenderWindow& window) const;
+
 private:
     sf::RectangleShape m_shape;
-    sf::Vector2<double> m_velocity;
-    sf::Vector2<double> m_position;
+    sf::Vector2f m_velocity;
+    sf::Vector2f m_position;
 };

@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "Game.h"
 #include <iostream>
 
 void handleEvent(sf::RenderWindow& window, sf::RectangleShape& shape) {
@@ -7,7 +8,7 @@ void handleEvent(sf::RenderWindow& window, sf::RectangleShape& shape) {
     while (const std::optional event = window.pollEvent())
     {
         // "close requested" event: we close the window
-        if (event->is<sf::Event::Closed>())
+        if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
             window.close();
         if (event->is<sf::Event::MouseButtonPressed>()) {
             window.setTitle(std::to_string((++counter)));
@@ -45,6 +46,7 @@ sf::Vector2<float> handleCollision(sf::RectangleShape& shape, sf::RenderWindow& 
     int window_y = window.getSize().y;
     float shape_width = shape.getSize().x;
     float shape_height = shape.getSize().y;
+    std::cout << "dimensions: shape x: " << shape_x << "shape y: " << shape_y << "window x: " << window_x << "window y: " << window_y << "shape widht: " << shape_width << "shape height: " << shape_height << std::endl;
     if(shape_x < 0 || (shape_x + shape_width) >= window_x) {
         newVelocity.x *= -1;
     }
@@ -55,34 +57,40 @@ sf::Vector2<float> handleCollision(sf::RectangleShape& shape, sf::RenderWindow& 
     return newVelocity;
 }
 
-int main()
-{
-    // create the window
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "My window");
-    std::cout << "x: " << window.getPosition().x << "y: " << window.getPosition().y << std::endl;
-    // run the program as long as the window is open
-    sf::RectangleShape shape({50,50});
-    std::cout << "x: " << shape.getPosition().x << "y: " << shape.getPosition().y << std::endl;
+// int main()
+// {
+//     // create the window
+//     sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "My window", sf::Style::None);
+//     window.setFramerateLimit(60);
+//     std::cout << "x: " << window.getPosition().x << "y: " << window.getPosition().y << std::endl;
+//     // run the program as long as the window is open
+//     sf::RectangleShape shape({50,50});
+//     std::cout << "x: " << shape.getPosition().x << "y: " << shape.getPosition().y << std::endl;
+//
+//     // set the shape color to green
+//     shape.setFillColor(sf::Color(100, 250, 50));
+//     sf::Vector2<float> velocity = {2,2};
+//
+//     while (window.isOpen())
+//     {
+//         handleEvent(window, shape);
+//
+//         // clear the window with black color
+//         window.clear(sf::Color::Black);
+//
+//         velocity = handleCollision(shape,window, velocity);
+//         shape.move(velocity);
+//
+//         window.draw(shape);
+//
+//         // end the current frame
+//         window.display();
+//     }
+//     std::cout << "x: " << shape.getPosition().x << "y: " << shape.getPosition().y << std::endl;
+//
+// }
 
-    // set the shape color to green
-    shape.setFillColor(sf::Color(100, 250, 50));
-    sf::Vector2<float> velocity = {0.05f,0.05f};
-
-    while (window.isOpen())
-    {
-        handleEvent(window, shape);
-
-        // clear the window with black color
-        window.clear(sf::Color::Black);
-
-        velocity = handleCollision(shape,window, velocity);
-        shape.move(velocity);
-
-        window.draw(shape);
-
-        // end the current frame
-        window.display();
-    }
-    std::cout << "x: " << shape.getPosition().x << "y: " << shape.getPosition().y << std::endl;
-
+int main() {
+    Game game1;
+    game1.Run();
 }

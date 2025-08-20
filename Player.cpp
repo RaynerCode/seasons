@@ -1,12 +1,22 @@
 #include "Player.h"
+constexpr sf::Color GREEN(100,250,50);
 
-#define PLAYER_SIZE_X 50
-#define PLAYER_SIZE_Y 50
-#define PLAYER_DEFAULT_VELOCITY_X 2
-#define PLAYER_DEFAULT_VELOCITY_Y 2
+constexpr sf::Vector2f PLAYER_SIZE({50,50});
+constexpr sf::Vector2f PLAYER_VELOCITY({2,2});
 
-Player::Player() {
-    sf::RectangleShape m_shape({PLAYER_SIZE_X,PLAYER_SIZE_Y});
-    sf::Vector2<double> m_velocity(PLAYER_DEFAULT_VELOCITY_X,PLAYER_DEFAULT_VELOCITY_Y);
-    sf::Vector2<double> m_position(0,0);
+
+Player::Player() :
+    m_shape(PLAYER_SIZE), m_velocity(PLAYER_VELOCITY),m_position(0,0) {
+    m_shape.setFillColor(GREEN);
 }
+
+void Player::MoveByVelocity() {
+    m_shape.move(m_velocity);
+    m_position += m_velocity;
+}
+
+void Player::Draw(sf::RenderWindow &window) const {
+    window.draw(m_shape);
+}
+
+
