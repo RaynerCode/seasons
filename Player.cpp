@@ -15,8 +15,15 @@ void Player::MoveByVelocity() {
     m_position += m_velocity;
 }
 
+void Player::move(const sf::Vector2f velocity) {
+    m_shape.move(velocity);
+    m_position += velocity;
+}
+
+
 void Player::Draw(sf::RenderWindow &window) const {
     window.draw(m_shape);
 }
+
 
 

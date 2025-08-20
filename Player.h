@@ -8,6 +8,8 @@ public:
 
     void MoveByVelocity();
 
+    void move(sf::Vector2f);
+
     void Draw(sf::RenderWindow& window) const;
 
 private:

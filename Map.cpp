@@ -12,11 +12,8 @@ Map::Map(const int index) {
 }
 
 void Map::Draw(sf::RenderWindow &window) {
-    int count = 0;
     for (const sf::RectangleShape& wall : m_walls) {
         window.draw(wall);
-        count++;
     }
-    std::cout << count << std::endl;
 }
 
