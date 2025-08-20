@@ -10,6 +10,8 @@ public:
 
     void move(sf::Vector2f);
 
+    void update();
+
     void Draw(sf::RenderWindow& window) const;
 
 private:
