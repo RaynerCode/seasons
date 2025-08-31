@@ -33,12 +33,19 @@ std::optional<sf::Rect<float>> checkCollisionMap(const sf::Rect<float> rect, Map
 
 sf::Vector2f RectDistance(const sf::Rect<float> rect1, const sf::Rect<float> rect2) {
     sf::Vector2f distance;
-    float left_distance = std::abs(rect1.position.x - rect2.position.x + rect2.size.x);
-    float right_distance = std::abs(rect1.position.x + rect1.size.x - rect2.position.x);
-    float top_distance = std::abs(rect1.position.y - rect2.position.y + rect2.size.y);
-    float bottom_distance = std::abs(rect1.position.y + rect1.size.x - rect2.position.y);
-    distance.x = std::min(left_distance , right_distance);
-    distance.y = std::min(top_distance, bottom_distance);
+    const float right_distance = rect1.position.x - (rect2.position.x + rect2.size.x); //positive
+    const float left_distance = rect1.position.x + rect1.size.x - rect2.position.x; //negative
+    const float bottom_distance = rect1.position.y - (rect2.position.y + rect2.size.y); //positive
+    const float top_distance = rect1.position.y + rect1.size.y - rect2.position.y;//negative
+    if(std::abs(left_distance) < std::abs(right_distance))
+        distance.x = -left_distance;
+    else {
+        distance.x = right_distance;
+    }
+    if(std::abs(bottom_distance) < std::abs(top_distance))
+        distance.y = bottom_distance;
+    else
+        distance.y = -top_distance;
     return distance;
 }
 
@@ -49,7 +56,20 @@ void Player::move(const sf::Vector2f velocity, Map& map) {
     sf::Rect<float> potential_rect = rect;
     potential_rect.position += velocity;
     if(const auto& problematic_rect = checkCollisionMap(potential_rect, map)) {
-        move(RectDistance(rect, *problematic_rect), map);
+        auto dist = RectDistance(rect, *problematic_rect);
+        std::cout << "dist x: " << dist.x << "dist y: " << dist.y << std::endl;
+        if(velocity.x > 0) {
+            move({dist.x,0}, map);
+        }
+        else if(velocity.x < 0) {
+            move({-dist.x,0}, map);
+        }
+        else if(velocity.y > 0) {
+            move({0,dist.y}, map);
+        }
+        else if(velocity.y < 0) {
+            move({0,-dist.y}, map);
+        }
         return;
     }
     m_shape.move(velocity);
