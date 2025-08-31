@@ -25,7 +25,8 @@ void Game::Run() {
         handleEvent(m_window, m_player);
         m_window.clear(sf::Color::Black);
 
-        m_player.update();
+        m_player.update(m_map);
+
 
         m_player.Draw(m_window);
         m_map.Draw(m_window);

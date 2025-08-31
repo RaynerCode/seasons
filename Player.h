@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Map.h"
 
 class Player {
 public:
@@ -8,14 +9,15 @@ public:
 
     void MoveByVelocity();
 
-    void move(sf::Vector2f);
+    void move(sf::Vector2f, Map& map);
 
-    void update();
+    void update(Map& map);
 
     void Draw(sf::RenderWindow& window) const;
+
+    bool isColliding(const sf::Shape& other) const;
 
 private:
     sf::RectangleShape m_shape;
     sf::Vector2f m_velocity;
-    sf::Vector2f m_position;
 };

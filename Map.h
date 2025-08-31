@@ -8,6 +8,8 @@ public:
     explicit Map(int index);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
+
+    [[nodiscard]] sf::RectangleShape& getWall(int index);
 private:
     std::vector<sf::RectangleShape> m_walls;
 

@@ -17,3 +17,9 @@ void Map::Draw(sf::RenderWindow &window) {
     }
 }
 
+sf::RectangleShape& Map::getWall(const int index) {
+    if(index >= static_cast<int>(m_walls.size()))
+        throw std::out_of_range("invalid wall of map, out of range");
+    return m_walls[index];
+}
+
