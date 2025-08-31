@@ -1,8 +1,11 @@
 #include "Player.h"
 constexpr sf::Color GREEN(100,250,50);
-
+constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
 constexpr float PLAYER_VELOCITY = 6.f;
+constexpr float GRAVITY = 9.81f;
+constexpr float EPSILON = 0.01f;
+
 
 
 Player::Player() :
@@ -49,25 +52,31 @@ sf::Vector2f RectDistance(const sf::Rect<float> rect1, const sf::Rect<float> rec
     return distance;
 }
 
+sf::Rect<float> getPotentialRect(const sf::RectangleShape& shape, const sf::Vector2f& velocity) {
+    const sf::Rect<float> rect = shape.getGlobalBounds();
+    sf::Rect<float> potential_rect = rect;
+    potential_rect.position += velocity;
+    return potential_rect;
+}
+
+
 void Player::move(const sf::Vector2f velocity, Map& map) {
     //move gets a map because later there will be more than one map...
     //basically I am creating another rect that is in the position theoretically will be and collision checking it
-    const sf::Rect<float> rect = m_shape.getGlobalBounds();
-    sf::Rect<float> potential_rect = rect;
-    potential_rect.position += velocity;
+    const sf::Rect<float> potential_rect = getPotentialRect(m_shape, velocity);
     if(const auto& problematic_rect = checkCollisionMap(potential_rect, map)) {
-        auto dist = RectDistance(rect, *problematic_rect);
-        std::cout << "dist x: " << dist.x << "dist y: " << dist.y << std::endl;
+        //if it can't go velocity, calculate the distance left and go there
+        auto dist = RectDistance(m_shape.getGlobalBounds(), *problematic_rect);
         if(velocity.x > 0) {
             move({dist.x,0}, map);
         }
-        else if(velocity.x < 0) {
+        if(velocity.x < 0) {
             move({-dist.x,0}, map);
         }
-        else if(velocity.y > 0) {
+        if(velocity.y > 0) {
             move({0,dist.y}, map);
         }
-        else if(velocity.y < 0) {
+        if(velocity.y < 0) {
             move({0,-dist.y}, map);
         }
         return;
@@ -80,7 +89,15 @@ void Player::Draw(sf::RenderWindow &window) const {
     window.draw(m_shape);
 }
 
+
 void Player::update(Map& map) {
+    static float gravity_velocity = 0;
+    gravity_velocity += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
+    if(checkCollisionMap(getPotentialRect(m_shape, {0,EPSILON}), map)) {
+        gravity_velocity = 0;
+    }
+    else
+        this->move(sf::Vector2f({0,gravity_velocity}),map);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         this->move({-PLAYER_VELOCITY,0}, map);
     }
@@ -92,7 +109,6 @@ void Player::update(Map& map) {
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
         this->move({0,PLAYER_VELOCITY}, map);
-
     }
 }
 

@@ -9,6 +9,8 @@ public:
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
 
+    void addWall(const sf::RectangleShape& wall);
+
     [[nodiscard]] sf::RectangleShape& getWall(int index);
     [[nodiscard]] std::vector<sf::RectangleShape> getWalls();
 private:
