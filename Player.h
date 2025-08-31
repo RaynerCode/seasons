@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <optional>
 #include "Map.h"
+
 
 class Player {
 public:
@@ -15,7 +17,7 @@ public:
 
     void Draw(sf::RenderWindow& window) const;
 
-    bool isColliding(const sf::Shape& other) const;
+    bool isColliding(const sf::Rect<float>& other) const;
 
 private:
     sf::RectangleShape m_shape;

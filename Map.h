@@ -10,6 +10,7 @@ public:
     void Draw(sf::RenderWindow& window);
 
     [[nodiscard]] sf::RectangleShape& getWall(int index);
+    [[nodiscard]] std::vector<sf::RectangleShape> getWalls();
 private:
     std::vector<sf::RectangleShape> m_walls;
 

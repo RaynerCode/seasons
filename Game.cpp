@@ -17,7 +17,7 @@ void handleEvent(sf::RenderWindow& window, Player& player) {
 }
 
 void Game::Run() {
-    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[0], "My Game Window", sf::Style::None);
+    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[3], "My Game Window", sf::Style::Default);
     m_window.setFramerateLimit(FRAME_RATE_LIMIT);
 
     while(m_window.isOpen()){
