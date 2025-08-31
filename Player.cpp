@@ -2,7 +2,8 @@
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
-constexpr float PLAYER_VELOCITY = 6.f;
+constexpr float PLAYER_VELOCITY_X = 6.f;
+constexpr float PLAYER_VELOCITY_Y = 200.f;
 constexpr float GRAVITY = 9.81f;
 constexpr float EPSILON = 0.01f;
 
@@ -89,27 +90,40 @@ void Player::Draw(sf::RenderWindow &window) const {
     window.draw(m_shape);
 }
 
+bool inAir(const sf::RectangleShape& shape, Map& map) {
+    if(checkCollisionMap(getPotentialRect(shape, {0,EPSILON}), map).has_value())
+        return false;
+    return true;
+}
+
+void jump(Player& player, Map& map) {
+    int iterations = PLAYER_VELOCITY_Y / 5;
+    for(int i = 0; i < iterations; i++) {
+        player.move({0, -5}, map);
+    }
+}
 
 void Player::update(Map& map) {
     static float gravity_velocity = 0;
+    const bool airborne = inAir(m_shape, map);
     gravity_velocity += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
-    if(checkCollisionMap(getPotentialRect(m_shape, {0,EPSILON}), map)) {
+    if(!airborne) {
         gravity_velocity = 0;
     }
     else
         this->move(sf::Vector2f({0,gravity_velocity}),map);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        this->move({-PLAYER_VELOCITY,0}, map);
+        this->move({-PLAYER_VELOCITY_X,0}, map);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        this->move({PLAYER_VELOCITY,0}, map);
+        this->move({PLAYER_VELOCITY_X,0}, map);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-        this->move({0, -PLAYER_VELOCITY}, map);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !airborne) {
+        jump(*this, map);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-        this->move({0,PLAYER_VELOCITY}, map);
-    }
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+    //     this->move({0,PLAYER_VELOCITY}, map);
+    // } at the moment no usage for s key
 }
 
 bool Player::isColliding(const sf::Rect<float> &other) const {

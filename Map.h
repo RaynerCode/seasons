@@ -15,5 +15,6 @@ public:
     [[nodiscard]] std::vector<sf::RectangleShape> getWalls();
 private:
     std::vector<sf::RectangleShape> m_walls;
-
 };
+
+void createWall(sf::Vector2f, sf::Vector2f, Map&);

@@ -7,14 +7,20 @@ Map::Map(const int index) {
     for(int i = 0;i < index; i++) {
         m_walls.emplace_back(WALL_SIZE);
         m_walls[i].setFillColor(RED);
-        m_walls[i].move(OFFSET * static_cast<float>(i+1));
-        std::cout << "wall x: " << m_walls[i].getPosition().x << "wall y: " << m_walls[i].getPosition().y << std::endl;
-    }
+        m_walls[i].move(OFFSET * static_cast<float>(i+1));}
     m_walls.emplace_back(sf::Vector2f({2000,20}));
     m_walls[index].move(sf::Vector2f({0,700}));
     sf::RectangleShape platform1({200,20});
     platform1.setPosition({600,600});
     addWall(platform1);
+    createWall({200,20},{600,600},*this);
+    createWall({200,20},{200,470},*this);
+}
+
+void createWall(const sf::Vector2f size, const sf::Vector2f position, Map& map) {
+    sf::RectangleShape wall(size);
+    wall.setPosition(position);
+    map.addWall(wall);
 }
 
 void Map::Draw(sf::RenderWindow &window) {
