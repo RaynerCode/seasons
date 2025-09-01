@@ -3,7 +3,7 @@ constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
 constexpr float PLAYER_VELOCITY_X = 6.f;
-constexpr float PLAYER_VELOCITY_Y = 200.f;
+constexpr float PLAYER_VELOCITY_Y = 8.f;
 constexpr float GRAVITY = 9.81f;
 constexpr float EPSILON = 0.01f;
 
@@ -15,8 +15,8 @@ Player::Player() :
     m_shape.setPosition({500,500});
 }
 
-void Player::MoveByVelocity() {
-    m_shape.move(m_velocity);
+void Player::MoveByVelocity(Map& map) {
+    this->move(m_velocity, map);
 }
 
 bool checkCollision(const sf::Rect<float>& rect, const sf::Rect<float>& other) {
@@ -42,14 +42,14 @@ sf::Vector2f RectDistance(const sf::Rect<float> rect1, const sf::Rect<float> rec
     const float bottom_distance = rect1.position.y - (rect2.position.y + rect2.size.y); //positive
     const float top_distance = rect1.position.y + rect1.size.y - rect2.position.y;//negative
     if(std::abs(left_distance) < std::abs(right_distance))
-        distance.x = -left_distance;
+        distance.x = left_distance;
     else {
         distance.x = right_distance;
     }
     if(std::abs(bottom_distance) < std::abs(top_distance))
         distance.y = bottom_distance;
     else
-        distance.y = -top_distance;
+        distance.y = top_distance;
     return distance;
 }
 
@@ -60,6 +60,14 @@ sf::Rect<float> getPotentialRect(const sf::RectangleShape& shape, const sf::Vect
     return potential_rect;
 }
 
+float sign(const float value) {
+    std::cout <<"value : " << value << std::endl;
+    if(value > 0)
+        return 1.f;
+    if(value < 0)
+        return -1.f;
+    return 0;
+}
 
 void Player::move(const sf::Vector2f velocity, Map& map) {
     //move gets a map because later there will be more than one map...
@@ -68,18 +76,22 @@ void Player::move(const sf::Vector2f velocity, Map& map) {
     if(const auto& problematic_rect = checkCollisionMap(potential_rect, map)) {
         //if it can't go velocity, calculate the distance left and go there
         auto dist = RectDistance(m_shape.getGlobalBounds(), *problematic_rect);
-        if(velocity.x > 0) {
-            move({dist.x,0}, map);
+        if(dist.x == 0) {
+            m_shape.move({0,velocity.y});
+            return;
         }
-        if(velocity.x < 0) {
-            move({-dist.x,0}, map);
+        std::cout << "dist x: " << dist.x << "dist y: " << dist.y << std::endl;
+        if(std::abs(dist.x) < std::abs(dist.y)) {
+            //const float sign_dist = sign(dist.x);
+            //std::cout << sign_dist << std::endl;
+            m_shape.move({-1.f * dist.x, 0});
+            m_shape.move({0,velocity.y});
         }
-        if(velocity.y > 0) {
-            move({0,dist.y}, map);
+        else {
+            m_velocity.y = 0;
+            m_shape.move({0, -1.f * dist.y});
         }
-        if(velocity.y < 0) {
-            move({0,-dist.y}, map);
-        }
+        std::cout << "closing gap" << std::endl;
         return;
     }
     m_shape.move(velocity);
@@ -96,34 +108,35 @@ bool inAir(const sf::RectangleShape& shape, Map& map) {
     return true;
 }
 
-void jump(Player& player, Map& map) {
-    int iterations = PLAYER_VELOCITY_Y / 5;
-    for(int i = 0; i < iterations; i++) {
-        player.move({0, -5}, map);
-    }
-}
 
 void Player::update(Map& map) {
-    static float gravity_velocity = 0;
+    m_velocity.x = 0;
     const bool airborne = inAir(m_shape, map);
-    gravity_velocity += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
+    m_velocity.y += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
     if(!airborne) {
-        gravity_velocity = 0;
+        m_velocity.y = 0;
     }
-    else
-        this->move(sf::Vector2f({0,gravity_velocity}),map);
+    // else
+    //     this->move(sf::Vector2f({0,gravity_velocity}),map);
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        this->move({-PLAYER_VELOCITY_X,0}, map);
+        m_velocity.x -= PLAYER_VELOCITY_X;
+        //this->move({-PLAYER_VELOCITY_X,0}, map);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        this->move({PLAYER_VELOCITY_X,0}, map);
+        m_velocity.x += PLAYER_VELOCITY_X;
+        //this->move({PLAYER_VELOCITY_X,0}, map);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !airborne) {
-        jump(*this, map);
+        m_velocity.y = -PLAYER_VELOCITY_Y;
+        std::cout << "jumping, should be once" << std::endl;
     }
     // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
     //     this->move({0,PLAYER_VELOCITY}, map);
     // } at the moment no usage for s key
+
+    MoveByVelocity(map);
+
 }
 
 bool Player::isColliding(const sf::Rect<float> &other) const {

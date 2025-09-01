@@ -9,7 +9,7 @@ public:
     Player();
     ~Player() = default;
 
-    void MoveByVelocity();
+    void MoveByVelocity(Map& map);
 
     void move(sf::Vector2f, Map& map);
 
