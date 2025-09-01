@@ -5,19 +5,20 @@ constexpr sf::Vector2f PLATFORM_SIZE = {200,20};
 constexpr sf::Vector2f PLATFORM_POSITION = {100,600};
 constexpr sf::Vector2f PLATFORM_GAP = {300,200};
 
-Game::Game() : m_maps() , current_map_index(0){
+Game::Game() : current_map_index(0){
     std::cout << m_maps.size() << std::endl;
     for(int i = 0; i < static_cast<int>(m_maps.size()); i++) {
         std::cout << "constructing map" << std::endl;
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 10; j++) {
             // m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x, PLATFORM_POSITION.y - (PLATFORM_GAP.y * 2 * static_cast<float>(j))});
             m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x + PLATFORM_GAP.x * i, PLATFORM_POSITION.y - PLATFORM_GAP.y * i - (PLATFORM_GAP.y * 2 * j)});
+            m_maps[i].getWall(j).kind = i % 2;
         }
     }
     std::cout << "Game constructed" << std::endl;
 }
 
-int handleEvent(sf::RenderWindow& window, Player& player) {
+int handleEvent(sf::RenderWindow& window) {
     // check all the window's events that were triggered since the last iteration of the loop
     while (const std::optional event = window.pollEvent())
     {
@@ -47,7 +48,7 @@ void Game::Run() {
     m_window.setFramerateLimit(FRAME_RATE_LIMIT);
     while(m_window.isOpen()){
 
-        if((new_map_index = handleEvent(m_window, m_player)) >= 0) {
+        if((new_map_index = handleEvent(m_window)) >= 0) {
             if(new_map_index != current_map_index) {
                 current_map_index = new_map_index;
             }

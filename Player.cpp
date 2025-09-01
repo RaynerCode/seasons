@@ -27,10 +27,14 @@ bool checkCollision(const sf::Rect<float>& rect, const sf::Rect<float>& other) {
 }
 
 std::optional<sf::Rect<float>> checkCollisionMap(const sf::Rect<float> rect, Map& map) {
-    for(const sf::RectangleShape& object : map.getWalls()) {
-        const auto& other = object.getGlobalBounds();
-        if(checkCollision(rect, other))
-            return object.getGlobalBounds();
+    for(const Platform& platform : map.getWalls()) {
+        const auto& platform_rect = platform.m_shape.getGlobalBounds();
+        if(checkCollision(rect, platform_rect)) {
+            if(platform.kind == 1) {
+                std::cout << "touching 1" << std::endl;
+            }
+            return platform_rect;
+        }
     }
     return std::nullopt;
 }

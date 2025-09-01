@@ -3,19 +3,28 @@
 #include <vector>
 #include <iostream>
 
+struct Platform {
+    sf::RectangleShape m_shape;
+    int kind = 0;
+
+    explicit Platform(const sf::Vector2f&);
+};
+
 class Map {
 public:
     explicit Map(int index = 3);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
 
-    void addWall(const sf::RectangleShape& wall);
+    void addWall(const Platform& wall);
     void createWall(sf::Vector2f size, sf::Vector2f position);
 
-    [[nodiscard]] sf::RectangleShape& getWall(int index);
-    [[nodiscard]] std::vector<sf::RectangleShape> getWalls();
+    [[nodiscard]] Platform& getWall(int index);
+    [[nodiscard]] std::vector<Platform> getWalls();
 private:
-    std::vector<sf::RectangleShape> m_walls;
+    std::vector<Platform> m_walls;
 };
 
 void createWall(sf::Vector2f, sf::Vector2f, Map&);
+
+
