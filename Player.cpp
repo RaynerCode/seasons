@@ -3,7 +3,7 @@ constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
 constexpr float PLAYER_VELOCITY_X = 6.f;
-constexpr float PLAYER_VELOCITY_Y = 8.f;
+constexpr float PLAYER_VELOCITY_Y = 10.f;
 constexpr float GRAVITY = 9.81f;
 constexpr float EPSILON = 0.01f;
 
@@ -95,6 +95,10 @@ void Player::move(const sf::Vector2f velocity, Map& map) {
         return;
     }
     m_shape.move(velocity);
+}
+
+sf::Vector2f Player::getPosition() const {
+    return m_shape.getPosition();
 }
 
 

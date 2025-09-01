@@ -19,6 +19,8 @@ public:
 
     bool isColliding(const sf::Rect<float>& other) const;
 
+    sf::Vector2f getPosition() const;
+
 private:
     sf::RectangleShape m_shape;
     sf::Vector2f m_velocity;

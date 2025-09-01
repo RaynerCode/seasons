@@ -10,17 +10,14 @@ Map::Map(const int index) {
         m_walls[i].move(OFFSET * static_cast<float>(i+1));}
     m_walls.emplace_back(sf::Vector2f({2000,20}));
     m_walls[index].move(sf::Vector2f({0,700}));
-    sf::RectangleShape platform1({200,20});
-    platform1.setPosition({600,600});
-    addWall(platform1);
-    createWall({200,20},{600,600},*this);
-    createWall({200,20},{200,470},*this);
+
+
 }
 
-void createWall(const sf::Vector2f size, const sf::Vector2f position, Map& map) {
+void Map::createWall(const sf::Vector2f size, const sf::Vector2f position) {
     sf::RectangleShape wall(size);
     wall.setPosition(position);
-    map.addWall(wall);
+    addWall(wall);
 }
 
 void Map::Draw(sf::RenderWindow &window) {
