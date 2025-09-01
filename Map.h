@@ -5,7 +5,7 @@
 
 class Map {
 public:
-    explicit Map(int index);
+    explicit Map(int index = 3);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
 

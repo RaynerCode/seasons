@@ -13,5 +13,6 @@ public:
 private:
     sf::RenderWindow m_window;
     Player m_player;
-    Map m_map;
+    std::array<Map, 4> m_maps;
+    int current_map_index;
 };
