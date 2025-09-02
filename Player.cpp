@@ -2,9 +2,9 @@
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
-constexpr float PLAYER_VELOCITY_X = 6.f;
-constexpr float PLAYER_VELOCITY_Y = 10.f;
-constexpr float GRAVITY = 9.81f;
+constexpr float PLAYER_VELOCITY_X = 6.3f;
+constexpr float PLAYER_VELOCITY_Y = 12.f;
+constexpr float GRAVITY = 20.f;
 constexpr float EPSILON = 0.01f;
 
 
@@ -30,8 +30,8 @@ std::optional<sf::Rect<float>> checkCollisionMap(const sf::Rect<float> rect, Map
     for(const Platform& platform : map.getWalls()) {
         const auto& platform_rect = platform.m_shape.getGlobalBounds();
         if(checkCollision(rect, platform_rect)) {
-            if(platform.kind == 1) {
-                std::cout << "touching 1" << std::endl;
+            if(platform.getType() == Platform::Type::Vine) {
+                std::cout << "touching Vine" << std::endl;
             }
             return platform_rect;
         }

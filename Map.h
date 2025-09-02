@@ -2,13 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
-
-struct Platform {
-    sf::RectangleShape m_shape;
-    int kind = 0;
-
-    explicit Platform(const sf::Vector2f&);
-};
+#include "Platform.h"
 
 class Map {
 public:

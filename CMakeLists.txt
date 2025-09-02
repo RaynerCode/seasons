@@ -19,6 +19,9 @@ add_executable(seasons main.cpp game.cpp game.h
         Player.cpp
         Player.h
         Map.cpp
-        Map.h)
+        Map.h
+        Platform.cpp
+        Platform.h
+)
 target_compile_features(seasons PRIVATE cxx_std_17)
 target_link_libraries(seasons PRIVATE SFML::Graphics)

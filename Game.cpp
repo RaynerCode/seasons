@@ -12,7 +12,6 @@ Game::Game() : current_map_index(0){
         for (int j = 0; j < 10; j++) {
             // m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x, PLATFORM_POSITION.y - (PLATFORM_GAP.y * 2 * static_cast<float>(j))});
             m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x + PLATFORM_GAP.x * i, PLATFORM_POSITION.y - PLATFORM_GAP.y * i - (PLATFORM_GAP.y * 2 * j)});
-            m_maps[i].getWall(j).kind = i % 2;
         }
     }
     std::cout << "Game constructed" << std::endl;
