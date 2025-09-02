@@ -128,9 +128,12 @@ bool dash(int& count, const bool airborne) {
 
 void Player::update(Map& map) {
     m_velocity.x = 0;
+    static int jump_count = 0;
+
     static int dash_count = 0; //currently can be bool (can_dash) but later might dash more than once
     static int dash_left_dir = 0; //amount of frames left for the dash
     if(dash_left_dir != 0) {
+        jump_count++;
         m_velocity.y = 0;
         m_velocity.x = PLAYER_VELOCITY_X * sign(dash_left_dir) * DASH_MULTIPLIER;
         if(dash_left_dir > 0)
@@ -146,6 +149,7 @@ void Player::update(Map& map) {
     if(!airborne) {
         m_velocity.y = 0;
         dash_count = 1;
+        jump_count = 1;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         m_velocity.x -= PLAYER_VELOCITY_X;
@@ -163,9 +167,9 @@ void Player::update(Map& map) {
             }
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !airborne) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && jump_count > 0) {
+        jump_count--;
         m_velocity.y = -PLAYER_VELOCITY_Y;
-        std::cout << "jumping, should be once" << std::endl;
     }
 
 
