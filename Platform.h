@@ -5,10 +5,10 @@ class Platform {
 public:
     enum class Type{
         Stone,
-        Ice,
-        Thorn,
         Leaf,
-        Vine
+        Ice,
+        Vine,
+        Thorn
     };
     sf::RectangleShape m_shape;
     Platform(const sf::Vector2f&, const sf::Vector2f&, Type = Type::Stone);

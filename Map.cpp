@@ -4,7 +4,7 @@ constexpr sf::Vector2f WALL_SIZE({20,20});
 constexpr sf::Vector2f OFFSET({500,100});
 
 
-Map::Map(const int index) {
+Map::Map(const int index, const Map::Season season_type) : season(season_type){
     for(int i = 0;i < index; i++) {
         m_walls.emplace_back(WALL_SIZE, OFFSET * static_cast<float>(i+1));
         m_walls[i].m_shape.setFillColor(RED);
@@ -12,9 +12,10 @@ Map::Map(const int index) {
     m_walls.emplace_back(sf::Vector2f({2000,20}), sf::Vector2f({0,700}));
 }
 
-void Map::createWall(const sf::Vector2f size, const sf::Vector2f position) {
+Platform& Map::createWall(const sf::Vector2f size, const sf::Vector2f position) {
     const Platform wall(size, position);
     addWall(wall);
+    return m_walls.back();
 }
 
 void Map::Draw(sf::RenderWindow &window) {

@@ -6,12 +6,18 @@
 
 class Map {
 public:
-    explicit Map(int index = 3);
+    enum class Season {
+        Fall,
+        Winter,
+        Spring,
+        Summer
+    };
+    Map(int index, Map::Season season_type);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
-
+    Season season;
     void addWall(const Platform& wall);
-    void createWall(sf::Vector2f size, sf::Vector2f position);
+    Platform& createWall(sf::Vector2f size, sf::Vector2f position);
 
     [[nodiscard]] Platform& getWall(int index);
     [[nodiscard]] std::vector<Platform> getWalls();

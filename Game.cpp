@@ -4,15 +4,25 @@ constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLATFORM_SIZE = {200,20};
 constexpr sf::Vector2f PLATFORM_POSITION = {100,600};
 constexpr sf::Vector2f PLATFORM_GAP = {300,200};
+const std::array<sf::Color, 4> season_colors = {sf::Color({229,89,28}), sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow};
 
-Game::Game() : current_map_index(0){
-    std::cout << m_maps.size() << std::endl;
-    for(int i = 0; i < static_cast<int>(m_maps.size()); i++) {
-        std::cout << "constructing map" << std::endl;
-        for (int j = 0; j < 10; j++) {
-            // m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x, PLATFORM_POSITION.y - (PLATFORM_GAP.y * 2 * static_cast<float>(j))});
-            m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x + PLATFORM_GAP.x * i, PLATFORM_POSITION.y - PLATFORM_GAP.y * i - (PLATFORM_GAP.y * 2 * j)});
+Game::Game() : current_map_index(0),
+m_maps{{Map(0, Map::Season::Fall),Map(1, Map::Season::Winter),Map(2, Map::Season::Spring),Map(3, Map::Season::Summer)}}
+{
+    // std::cout << m_maps.size() << std::endl;
+    // for(int i = 0; i < static_cast<int>(m_maps.size()); i++) {
+    //     std::cout << "constructing map" << std::endl;
+    //     for (int j = 0; j < 10; j++) {
+    //         m_maps[i].createWall(PLATFORM_SIZE, {PLATFORM_POSITION.x + PLATFORM_GAP.x * i, PLATFORM_POSITION.y - PLATFORM_GAP.y * i - (PLATFORM_GAP.y * 2 * j)});
+    //     }
+    // }
+    for(auto& map : m_maps) {
+        auto& platform = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800,0}));
+        auto& waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{0,PLATFORM_SIZE.y * 3}, (PLATFORM_POSITION + sf::Vector2f{400,0}));
+        if(map.season != Map::Season::Winter && map.season != Map::Season::Summer) {
+            platform.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
         }
+        waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
     }
     std::cout << "Game constructed" << std::endl;
 }
