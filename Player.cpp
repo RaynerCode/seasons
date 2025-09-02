@@ -6,6 +6,8 @@ constexpr float PLAYER_VELOCITY_X = 6.3f;
 constexpr float PLAYER_VELOCITY_Y = 12.f;
 constexpr float GRAVITY = 20.f;
 constexpr float EPSILON = 0.01f;
+constexpr int DASH_TIME = 10;
+constexpr int DASH_MULTIPLIER = 5;
 
 
 
@@ -116,32 +118,56 @@ bool inAir(const sf::RectangleShape& shape, Map& map) {
     return true;
 }
 
+bool dash(int& count, const bool airborne) {
+    if(count && airborne) {
+        count--;
+        return true;
+    }
+    return false;
+}
 
 void Player::update(Map& map) {
     m_velocity.x = 0;
+    static int dash_count = 0; //currently can be bool (can_dash) but later might dash more than once
+    static int dash_left_dir = 0; //amount of frames left for the dash
+    if(dash_left_dir != 0) {
+        m_velocity.y = 0;
+        m_velocity.x = PLAYER_VELOCITY_X * sign(dash_left_dir) * DASH_MULTIPLIER;
+        if(dash_left_dir > 0)
+            dash_left_dir--;
+        else
+            dash_left_dir++;
+        std::cout << dash_left_dir << std::endl;
+        MoveByVelocity(map);
+        return;
+    }
     const bool airborne = inAir(m_shape, map);
     m_velocity.y += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
     if(!airborne) {
         m_velocity.y = 0;
+        dash_count = 1;
     }
-    // else
-    //     this->move(sf::Vector2f({0,gravity_velocity}),map);
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         m_velocity.x -= PLAYER_VELOCITY_X;
-        //this->move({-PLAYER_VELOCITY_X,0}, map);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+            if(dash(dash_count, airborne)) {
+                dash_left_dir = -1 * DASH_TIME;
+            }
+        }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
         m_velocity.x += PLAYER_VELOCITY_X;
-        //this->move({PLAYER_VELOCITY_X,0}, map);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+            if(dash(dash_count, airborne)) {
+                dash_left_dir = DASH_TIME;
+            }
+        }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !airborne) {
         m_velocity.y = -PLAYER_VELOCITY_Y;
         std::cout << "jumping, should be once" << std::endl;
     }
-    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-    //     this->move({0,PLAYER_VELOCITY}, map);
-    // } at the moment no usage for s key
+
 
     MoveByVelocity(map);
 
