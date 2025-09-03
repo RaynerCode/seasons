@@ -14,7 +14,7 @@ constexpr int DASH_MULTIPLIER = 5;
 Player::Player() :
     m_shape(PLAYER_SIZE){
     m_shape.setFillColor(GREEN);
-    m_shape.setPosition({500,500});
+    m_shape.setPosition({100,500});
 }
 
 void Player::MoveByVelocity(Map& map) {
@@ -133,7 +133,7 @@ void Player::update(Map& map) {
     static int dash_count = 0; //currently can be bool (can_dash) but later might dash more than once
     static int dash_left_dir = 0; //amount of frames left for the dash
     if(dash_left_dir != 0) {
-        jump_count++;
+        jump_count = 1;
         m_velocity.y = 0;
         m_velocity.x = PLAYER_VELOCITY_X * sign(dash_left_dir) * DASH_MULTIPLIER;
         if(dash_left_dir > 0)

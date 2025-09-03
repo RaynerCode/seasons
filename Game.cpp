@@ -18,11 +18,14 @@ m_maps{{Map(0, Map::Season::Fall),Map(1, Map::Season::Winter),Map(2, Map::Season
     // }
     for(auto& map : m_maps) {
         auto& platform = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800,0}));
-        auto& waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{0,PLATFORM_SIZE.y * 3}, (PLATFORM_POSITION + sf::Vector2f{400,0}));
+        if(map.season != Map::Season::Summer) {
+            auto& waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{100,PLATFORM_SIZE.y * 30}, (PLATFORM_POSITION + sf::Vector2f{400,-500}));
+            waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+        }
+
         if(map.season != Map::Season::Winter && map.season != Map::Season::Summer) {
             platform.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
         }
-        waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
     }
     std::cout << "Game constructed" << std::endl;
 }
@@ -53,7 +56,7 @@ int handleEvent(sf::RenderWindow& window) {
 
 void Game::Run() {
     static int new_map_index;
-    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[3], "My Game Window", sf::Style::Default);
+    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[0], "My Game Window", sf::Style::None);
     m_window.setFramerateLimit(FRAME_RATE_LIMIT);
     while(m_window.isOpen()){
 
