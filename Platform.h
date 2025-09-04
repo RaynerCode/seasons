@@ -27,6 +27,7 @@ private:
 };
 
 class ThornPlatform : public Platform {
+public:
     ThornPlatform(const sf::Vector2f&, const sf::Vector2f&);
 };
 
@@ -36,5 +37,6 @@ class LeafPlatform : public Platform {
 };
 
 class VinePlatform : public Platform {
+public:
     VinePlatform(const sf::Vector2f&, const sf::Vector2f&);
 };

@@ -4,7 +4,7 @@ constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLATFORM_SIZE = {200,20};
 constexpr sf::Vector2f PLATFORM_POSITION = {100,600};
 constexpr sf::Vector2f PLATFORM_GAP = {300,200};
-const std::array<sf::Color, 4> season_colors = {sf::Color({229,89,28}), sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow};
+constexpr std::array<sf::Color, 4> season_colors = {sf::Color({229,89,28}), sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow};
 
 Game::Game() : current_map_index(0),
 m_maps{{Map(0, Map::Season::Fall),Map(1, Map::Season::Winter),Map(2, Map::Season::Spring),Map(3, Map::Season::Summer)}}
@@ -17,15 +17,20 @@ m_maps{{Map(0, Map::Season::Fall),Map(1, Map::Season::Winter),Map(2, Map::Season
     //     }
     // }
     for(auto& map : m_maps) {
-        auto& platform = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800,0}));
-        if(map.season != Map::Season::Summer) {
-            auto& waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{100,PLATFORM_SIZE.y * 30}, (PLATFORM_POSITION + sf::Vector2f{400,-500}));
+        if(map.season == Map::Season::Winter) {
+            auto platform1 = map.addWall(std::make_unique<VinePlatform>(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800,-150})));
+            platform1->m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+        }
+        else {
+            //auto& platform1 = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800,-150}));
+        }
+        if(map.season != Map::Season::Winter) {
+            auto& platform2 = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{100,-450}));
+            auto& waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{100,PLATFORM_SIZE.y * 50}, (PLATFORM_POSITION + sf::Vector2f{400,-900}));
+            platform2.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
             waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
         }
 
-        if(map.season != Map::Season::Winter && map.season != Map::Season::Summer) {
-            platform.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
-        }
     }
     std::cout << "Game constructed" << std::endl;
 }

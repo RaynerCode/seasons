@@ -16,13 +16,13 @@ public:
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
     Season season;
-    void addWall(const Platform& wall);
+    Platform* addWall(std::unique_ptr<Platform> wall);
     Platform& createWall(sf::Vector2f size, sf::Vector2f position);
 
-    [[nodiscard]] Platform& getWall(int index);
-    [[nodiscard]] std::vector<Platform> getWalls();
+    [[nodiscard]] Platform& getWall(int index) const;
+    [[nodiscard]] std::vector<std::unique_ptr<Platform>>& getWalls();
 private:
-    std::vector<Platform> m_walls;
+    std::vector<std::unique_ptr<Platform>> m_walls;
 };
 
 void createWall(sf::Vector2f, sf::Vector2f, Map&);

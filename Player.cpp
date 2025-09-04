@@ -29,10 +29,10 @@ bool checkCollision(const sf::Rect<float>& rect, const sf::Rect<float>& other) {
 }
 
 std::optional<sf::Rect<float>> checkCollisionMap(const sf::Rect<float> rect, Map& map) {
-    for(const Platform& platform : map.getWalls()) {
-        const auto& platform_rect = platform.m_shape.getGlobalBounds();
+    for(const std::unique_ptr<Platform>& platform : map.getWalls()) {
+        const auto& platform_rect = platform->m_shape.getGlobalBounds();
         if(checkCollision(rect, platform_rect)) {
-            if(platform.getType() == Platform::Type::Vine) {
+            if(platform->getType() == Platform::Type::Vine) {
                 std::cout << "touching Vine" << std::endl;
             }
             return platform_rect;
