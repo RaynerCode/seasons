@@ -2,7 +2,7 @@
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
-constexpr float PLAYER_VELOCITY_X = 6.3f;
+constexpr float PLAYER_VELOCITY_X = 10.f;
 constexpr float PLAYER_VELOCITY_Y = 12.f;
 constexpr float GRAVITY = 20.f;
 constexpr float EPSILON = 0.01f;
@@ -67,7 +67,6 @@ sf::Rect<float> getPotentialRect(const sf::RectangleShape& shape, const sf::Vect
 }
 
 float sign(const float value) {
-    std::cout <<"value : " << value << std::endl;
     if(value > 0)
         return 1.f;
     if(value < 0)
@@ -76,28 +75,25 @@ float sign(const float value) {
 }
 
 void Player::move(const sf::Vector2f velocity, Map& map) {
-    //move gets a map because later there will be more than one map...
     //basically I am creating another rect that is in the position theoretically will be and collision checking it
     const sf::Rect<float> potential_rect = getPotentialRect(m_shape, velocity);
     if(const auto& problematic_rect = checkCollisionMap(potential_rect, map)) {
         //if it can't go velocity, calculate the distance left and go there
-        auto dist = RectDistance(m_shape.getGlobalBounds(), *problematic_rect);
+        const auto dist = RectDistance(m_shape.getGlobalBounds(), *problematic_rect);
         if(dist.x == 0) {
             m_shape.move({0,velocity.y});
             return;
         }
-        std::cout << "dist x: " << dist.x << "dist y: " << dist.y << std::endl;
-        if(std::abs(dist.x) < std::abs(dist.y)) {
+        if(std::abs(dist.x) < std::abs(dist.y)) { //should still be in air but now touching problematic rect
             //const float sign_dist = sign(dist.x);
             //std::cout << sign_dist << std::endl;
             m_shape.move({-1.f * dist.x, 0});
             m_shape.move({0,velocity.y});
         }
-        else {
+        else { //grounding the player (or making him hit the celling)
             m_velocity.y = 0;
             m_shape.move({0, -1.f * dist.y});
         }
-        std::cout << "closing gap" << std::endl;
         return;
     }
     m_shape.move(velocity);
@@ -127,29 +123,33 @@ bool dash(int& count, const bool airborne) {
 }
 
 void Player::update(Map& map) {
+    move(sf::Vector2f({0,0}), map); //making sure player isn't in a foul spot
     m_velocity.x = 0;
     static int jump_count = 0;
-
+    static int dash_jump_count = 0;
     static int dash_count = 0; //currently can be bool (can_dash) but later might dash more than once
     static int dash_left_dir = 0; //amount of frames left for the dash
     if(dash_left_dir != 0) {
-        jump_count = 1;
+        dash_jump_count = 1;
         m_velocity.y = 0;
         m_velocity.x = PLAYER_VELOCITY_X * sign(dash_left_dir) * DASH_MULTIPLIER;
         if(dash_left_dir > 0)
             dash_left_dir--;
         else
             dash_left_dir++;
-        std::cout << dash_left_dir << std::endl;
         MoveByVelocity(map);
         return;
     }
     const bool airborne = inAir(m_shape, map);
     m_velocity.y += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
     if(!airborne) {
+        std::cout << "not airborne" << std::endl;
         m_velocity.y = 0;
         dash_count = 1;
         jump_count = 1;
+    }
+    else {
+        jump_count = 0;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         m_velocity.x -= PLAYER_VELOCITY_X;
@@ -167,8 +167,9 @@ void Player::update(Map& map) {
             }
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && jump_count > 0) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && (jump_count > 0 || dash_jump_count > 0)) {
         jump_count--;
+        dash_jump_count--;
         m_velocity.y = -PLAYER_VELOCITY_Y;
     }
 

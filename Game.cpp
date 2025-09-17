@@ -66,13 +66,13 @@ void Game::Run() {
         }
         m_window.clear(sf::Color::Black);
 
+        m_maps[current_map_index].Draw(m_window);
 
 
         m_player.update(m_maps[current_map_index]);
 
 
         m_player.Draw(m_window);
-        m_maps[current_map_index].Draw(m_window);
 
         m_window.setView(sf::View(sf::Rect<float>({0,m_player.getPosition().y - 700}, m_window.getView().getSize())));
 
