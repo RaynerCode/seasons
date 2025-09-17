@@ -2,6 +2,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "Player.h"
 #include "Map.h"
+#include "Factory.h"
 
 class Game {
 public:
