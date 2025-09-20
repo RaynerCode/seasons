@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include "Map.h"
+#include "Platform.h"
 
 
 class Player {
@@ -21,7 +22,10 @@ public:
 
     sf::Vector2f getPosition() const;
 
+
 private:
     sf::RectangleShape m_shape;
     sf::Vector2f m_velocity;
+public:
+    Platform::Type m_touching;
 };

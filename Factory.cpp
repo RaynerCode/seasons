@@ -11,15 +11,23 @@ void createDefaultMap(Map& map) {
 
 void Factory::createMap(Map& map, const Map::Season season) {
     switch(season){
-        case Map::Season::Fall:
+        case Map::Season::Fall: {
             createDefaultMap(map);
-        case Map::Season::Winter:
+            map.addWall(std::make_unique<LeafPlatform>(LeafPlatform(PLATFORM_SIZE,PLATFORM_POSITION - sf::Vector2f{100,200})));
+            break;
+        }
+        case Map::Season::Winter: {
             createDefaultMap(map);
-        case Map::Season::Spring:
+            break;
+        }
+        case Map::Season::Spring: {
             createDefaultMap(map);
-        case Map::Season::Summer:
+            break;
+        }
+        case Map::Season::Summer: {
             const auto platform1 = map.addWall(
                std::make_unique<VinePlatform>(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800, -150})));
             platform1->m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+        }
     }
 }

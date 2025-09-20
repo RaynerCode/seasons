@@ -20,7 +20,7 @@ private:
 
 class IcePlatform : public Platform {
 public:
-    IcePlatform(const sf::Vector2f&, const sf::Vector2f&, float, float);
+    IcePlatform(const sf::Vector2f& size, const sf::Vector2f& position, float, float);
 private:
     float mu_s_max;
     float mu_k;
@@ -28,15 +28,16 @@ private:
 
 class ThornPlatform : public Platform {
 public:
-    ThornPlatform(const sf::Vector2f&, const sf::Vector2f&);
+    ThornPlatform(const sf::Vector2f& size, const sf::Vector2f& position);
 };
 
 class LeafPlatform : public Platform {
-    LeafPlatform(const sf::Vector2f&, const sf::Vector2f&);
+public:
+    LeafPlatform(const sf::Vector2f& size, const sf::Vector2f& position);
 
 };
 
 class VinePlatform : public Platform {
 public:
-    VinePlatform(const sf::Vector2f&, const sf::Vector2f&);
+    VinePlatform(const sf::Vector2f& size, const sf::Vector2f& position);
 };

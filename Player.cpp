@@ -11,10 +11,11 @@ constexpr int DASH_MULTIPLIER = 5;
 
 
 
-Player::Player() :
-    m_shape(PLAYER_SIZE){
+Player::Player() : m_shape(PLAYER_SIZE),
+    m_touching(Platform::Type::Stone){
     m_shape.setFillColor(GREEN);
     m_shape.setPosition({100,500});
+
 }
 
 void Player::MoveByVelocity(Map& map) {
@@ -28,14 +29,12 @@ bool checkCollision(const sf::Rect<float>& rect, const sf::Rect<float>& other) {
     return false;
 }
 
-std::optional<sf::Rect<float>> checkCollisionMap(const sf::Rect<float> rect, Map& map) {
+
+std::optional<const Platform*> checkCollisionMap(const sf::Rect<float> rect, Map& map) {
     for(const std::unique_ptr<Platform>& platform : map.getWalls()) {
         const auto& platform_rect = platform->m_shape.getGlobalBounds();
         if(checkCollision(rect, platform_rect)) {
-            if(platform->getType() == Platform::Type::Vine) {
-                std::cout << "touching Vine" << std::endl;
-            }
-            return platform_rect;
+            return platform.get();
         }
     }
     return std::nullopt;
@@ -74,12 +73,37 @@ float sign(const float value) {
     return 0;
 }
 
+void handlePlatformCollision(const Platform* platform, Player& player) {
+    if(platform->getType() == Platform::Type::Stone) { //restore normal behaviour
+        return;
+    }
+    if(platform->getType() == Platform::Type::Vine) {
+        std::cout << "touching Vine" << std::endl;
+        player.m_touching = Platform::Type::Vine;
+    }
+    if(platform->getType() == Platform::Type::Thorn) {
+        std::cout << "touching Thorn" << std::endl;
+        player.m_touching = Platform::Type::Thorn;
+    }
+    if(platform->getType() == Platform::Type::Ice) {
+        std::cout << "touching Ice" << std::endl;
+        player.m_touching = Platform::Type::Ice;
+    }
+    if(platform->getType() == Platform::Type::Leaf) {
+        std::cout << "touching Leaf!" << std::endl;
+        player.m_touching = Platform::Type::Leaf;
+    }
+}
+
+
 void Player::move(const sf::Vector2f velocity, Map& map) {
     //basically I am creating another rect that is in the position theoretically will be and collision checking it
     const sf::Rect<float> potential_rect = getPotentialRect(m_shape, velocity);
-    if(const auto& problematic_rect = checkCollisionMap(potential_rect, map)) {
+    if(const auto& problematic_platform = checkCollisionMap(potential_rect, map)) {
+        const auto& problematic_rect = (*problematic_platform)->m_shape.getGlobalBounds();
         //if it can't go velocity, calculate the distance left and go there
-        const auto dist = RectDistance(m_shape.getGlobalBounds(), *problematic_rect);
+        const auto dist = RectDistance(m_shape.getGlobalBounds(), problematic_rect);
+        handlePlatformCollision(*problematic_platform, *this);
         if(dist.x == 0) {
             m_shape.move({0,velocity.y});
             return;
@@ -143,7 +167,6 @@ void Player::update(Map& map) {
     const bool airborne = inAir(m_shape, map);
     m_velocity.y += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
     if(!airborne) {
-        std::cout << "not airborne" << std::endl;
         m_velocity.y = 0;
         dash_count = 1;
         jump_count = 1;
