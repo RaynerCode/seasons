@@ -93,7 +93,7 @@ void Player::closeGap(const sf::Vector2f& dist,const sf::Vector2f& velocity) {
 
 void markPlatformCollision(const Platform* platform, Player& player) {
     if(platform->getType() == Platform::Type::Stone) { //restore normal behaviour
-        std::cout << "touching Stone" << std::endl;
+        //std::cout << "touching Stone" << std::endl;
         player.m_touching = Platform::Type::Stone;
     }
     if(platform->getType() == Platform::Type::Vine) {

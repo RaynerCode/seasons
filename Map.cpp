@@ -9,7 +9,7 @@ Map::Map(const int index, const Map::Season season_type) : season(season_type){
         m_walls.emplace_back(std::make_unique<Platform>(WALL_SIZE, OFFSET * static_cast<float>(i+1)));
         m_walls[i]->m_shape.setFillColor(RED);
     }
-    m_walls.emplace_back(std::make_unique<Platform>(sf::Vector2f({2000,20}), sf::Vector2f({0,700})));
+    m_walls.emplace_back(std::make_unique<Platform>(sf::Vector2f({8000,20}), sf::Vector2f({0,700})));
 }
 
 Platform& Map::createWall(const sf::Vector2f size, const sf::Vector2f position) {

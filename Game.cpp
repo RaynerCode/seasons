@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <iostream>
 constexpr int FRAME_RATE_LIMIT = 60;
+constexpr int CAMERA_OFFSET_Y = 700;
 Game::Game() : current_map_index(0),
 m_maps({Map(0,Map::Season::Fall),Map(1,Map::Season::Winter),Map(2,Map::Season::Spring),Map(3,Map::Season::Summer)}) {
     for(auto& map: m_maps) {
@@ -54,7 +55,22 @@ void Game::Run() {
 
         m_player.Draw(m_window);
 
-        m_window.setView(sf::View(sf::Rect<float>({0,m_player.getPosition().y - 700}, m_window.getView().getSize())));
+        static float current_camera_x = 0;
+        float window_center_x = m_window.getView().getCenter().x;
+        float player_x = m_player.getPosition().x;
+        if(std::abs(window_center_x - player_x) > m_window.getSize().x / 2 - 10) {
+            if(player_x > window_center_x) {
+                current_camera_x = m_player.getPosition().x - 10;
+                //m_window.setView(sf::View(sf::Rect<float>({m_player.getPosition().x - 10,m_player.getPosition().y - CAMERA_OFFSET_Y}, m_window.getView().getSize())));
+            }
+            else {
+                // m_window.setView(sf::View(sf::Rect<float>({m_player.getPosition().x - m_window.getSize().x + 10,m_player.getPosition().y - CAMERA_OFFSET_Y}, m_window.getView().getSize())));
+                // std::cout << "moving window left" << std::endl;
+                current_camera_x = m_player.getPosition().x - m_window.getSize().x + 10;
+            }
+        }
+        m_window.setView(sf::View(sf::Rect<float>({current_camera_x,m_player.getPosition().y - CAMERA_OFFSET_Y}, m_window.getView().getSize())));
+
 
         m_window.display();
     }
