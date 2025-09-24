@@ -2,6 +2,7 @@
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
+constexpr sf::Vector2f PLAYER_INITIAL_POSITION({100,500});
 constexpr float PLAYER_VELOCITY_X = 10.f;
 constexpr float PLAYER_VELOCITY_Y = 12.f;
 constexpr float GRAVITY = 20.f;
@@ -14,7 +15,7 @@ constexpr int DASH_MULTIPLIER = 5;
 Player::Player() : m_shape(PLAYER_SIZE),
     m_touching(Platform::Type::Stone){
     m_shape.setFillColor(GREEN);
-    m_shape.setPosition({100,500});
+    m_shape.setPosition(PLAYER_INITIAL_POSITION);
 
 }
 
@@ -73,9 +74,27 @@ float sign(const float value) {
     return 0;
 }
 
-void handlePlatformCollision(const Platform* platform, Player& player) {
-    if(platform->getType() == Platform::Type::Stone) { //restore normal behaviour
+void Player::closeGap(const sf::Vector2f& dist,const sf::Vector2f& velocity) {
+    if(dist.x == 0) {
+        m_shape.move({0,velocity.y});
         return;
+    }
+    if(std::abs(dist.x) < std::abs(dist.y)) { //should still be in air but now touching problematic rect
+        //const float sign_dist = sign(dist.x);
+        //std::cout << sign_dist << std::endl;
+        m_shape.move({-1.f * dist.x, 0});
+        m_shape.move({0,velocity.y});
+    }
+    else { //grounding the player (or making him hit the celling)
+        m_velocity.y = 0;
+        m_shape.move({0, -1.f * dist.y});
+    }
+}
+
+void markPlatformCollision(const Platform* platform, Player& player) {
+    if(platform->getType() == Platform::Type::Stone) { //restore normal behaviour
+        std::cout << "touching Stone" << std::endl;
+        player.m_touching = Platform::Type::Stone;
     }
     if(platform->getType() == Platform::Type::Vine) {
         std::cout << "touching Vine" << std::endl;
@@ -96,31 +115,16 @@ void handlePlatformCollision(const Platform* platform, Player& player) {
 }
 
 
-void Player::move(const sf::Vector2f velocity, Map& map) {
-    //basically I am creating another rect that is in the position theoretically will be and collision checking it
+void Player::move(const sf::Vector2f velocity, Map& map) { //basically I am creating another rect that is in the position theoretically will be and collision checking it
     const sf::Rect<float> potential_rect = getPotentialRect(m_shape, velocity);
     if(const auto& problematic_platform = checkCollisionMap(potential_rect, map)) {
+        markPlatformCollision(*problematic_platform, *this);
         const auto& problematic_rect = (*problematic_platform)->m_shape.getGlobalBounds();
-        //if it can't go velocity, calculate the distance left and go there
         const auto dist = RectDistance(m_shape.getGlobalBounds(), problematic_rect);
-        handlePlatformCollision(*problematic_platform, *this);
-        if(dist.x == 0) {
-            m_shape.move({0,velocity.y});
-            return;
-        }
-        if(std::abs(dist.x) < std::abs(dist.y)) { //should still be in air but now touching problematic rect
-            //const float sign_dist = sign(dist.x);
-            //std::cout << sign_dist << std::endl;
-            m_shape.move({-1.f * dist.x, 0});
-            m_shape.move({0,velocity.y});
-        }
-        else { //grounding the player (or making him hit the celling)
-            m_velocity.y = 0;
-            m_shape.move({0, -1.f * dist.y});
-        }
+        closeGap(dist, velocity);
         return;
     }
-    m_shape.move(velocity);
+    m_shape.move(velocity); //everything is ok, we can move velocity with no collision
 }
 
 sf::Vector2f Player::getPosition() const {
@@ -132,9 +136,11 @@ void Player::Draw(sf::RenderWindow &window) const {
     window.draw(m_shape);
 }
 
-bool inAir(const sf::RectangleShape& shape, Map& map) {
-    if(checkCollisionMap(getPotentialRect(shape, {0,EPSILON}), map).has_value())
+bool inAir(const sf::RectangleShape& shape, Map& map, Player& player) {
+    if(const auto& problematic_platform = checkCollisionMap(getPotentialRect(shape, {0,EPSILON}), map)) {
+        markPlatformCollision(*problematic_platform, player);
         return false;
+    }
     return true;
 }
 
@@ -148,6 +154,9 @@ bool dash(int& count, const bool airborne) {
 
 void Player::update(Map& map) {
     move(sf::Vector2f({0,0}), map); //making sure player isn't in a foul spot
+    if(m_shape.getPosition().y > 1000) {
+        m_shape.setPosition(PLAYER_INITIAL_POSITION);
+    }
     m_velocity.x = 0;
     static int jump_count = 0;
     static int dash_jump_count = 0;
@@ -157,14 +166,14 @@ void Player::update(Map& map) {
         dash_jump_count = 1;
         m_velocity.y = 0;
         m_velocity.x = PLAYER_VELOCITY_X * sign(dash_left_dir) * DASH_MULTIPLIER;
-        if(dash_left_dir > 0)
+        if(dash_left_dir > 0) //basically instead of another variable called dash_dir and dash_time i have just this going to zero from both ends
             dash_left_dir--;
         else
             dash_left_dir++;
         MoveByVelocity(map);
         return;
     }
-    const bool airborne = inAir(m_shape, map);
+    const bool airborne = inAir(m_shape, map, *this);
     m_velocity.y += (1.f/FRAME_RATE_LIMIT) * GRAVITY;
     if(!airborne) {
         m_velocity.y = 0;
@@ -172,7 +181,7 @@ void Player::update(Map& map) {
         jump_count = 1;
     }
     else {
-        jump_count = 0;
+        jump_count = 0; //making it impossible to jump after falling from platform
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         m_velocity.x -= PLAYER_VELOCITY_X;
@@ -196,6 +205,18 @@ void Player::update(Map& map) {
         m_velocity.y = -PLAYER_VELOCITY_Y;
     }
 
+    //giving effects based on platform type if standing on it
+
+    if(!airborne && m_touching == Platform::Type::Leaf) {
+        constexpr float leaf_multiplier = 0.5f;
+        m_velocity.x *= leaf_multiplier;
+    }
+    if(m_touching == Platform::Type::Thorn) { //currently i am just teleporting back to beginning
+        m_touching = Platform::Type::Stone;
+        m_shape.setPosition(PLAYER_INITIAL_POSITION);
+        //m_velocity.y = 0;
+        return;
+    }
 
     MoveByVelocity(map);
 

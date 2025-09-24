@@ -22,6 +22,8 @@ public:
 
     sf::Vector2f getPosition() const;
 
+    void closeGap(const sf::Vector2f& dist,const sf::Vector2f& velocity);
+
 
 private:
     sf::RectangleShape m_shape;
