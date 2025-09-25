@@ -8,6 +8,11 @@ void createDefaultMap(Map& map) {
     waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
 }
 
+void addStoneWallInColor(const sf::Vector2f& size,const sf::Vector2f& position, Map& map) {
+    const auto platform1 = map.addWall(std::make_unique<Platform>(size,position));
+    platform1->m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+}
+
 
 void Factory::createMap(Map& map, const Map::Season season) {
     switch(season){
@@ -19,6 +24,7 @@ void Factory::createMap(Map& map, const Map::Season season) {
         }
         case Map::Season::Winter: {
             createDefaultMap(map);
+            addStoneWallInColor(PLATFORM_SIZE, PLATFORM_POSITION + sf::Vector2f({900,-200}),map);
             break;
         }
         case Map::Season::Spring: {
