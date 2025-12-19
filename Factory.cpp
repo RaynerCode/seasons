@@ -1,16 +1,21 @@
 #include "Factory.h"
+constexpr sf::Color GRAY = sf::Color({109, 106, 100});
 
 void createDefaultMap(Map& map) {
-    auto &platform2 = map.createWall(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{100, -450}));
-    auto &waterfall = map.createWall(PLATFORM_SIZE + sf::Vector2f{100, PLATFORM_SIZE.y * 50},
-                                     (PLATFORM_POSITION + sf::Vector2f{400, -900}));
-    platform2.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
-    waterfall.m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+    addStoneWallInGray(sf::Vector2f{300, 1000}, (PLATFORM_POSITION + sf::Vector2f{400, -1000}), map);
+    addStoneWallInGray(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{100, -450}), map);
+    addStoneWallInGray(PLATFORM_SIZE, (PLATFORM_POSITION + sf::Vector2f{800, -450}), map);
 }
 
 void addStoneWallInColor(const sf::Vector2f& size,const sf::Vector2f& position, Map& map) {
     const auto platform1 = map.addWall(std::make_unique<Platform>(size,position));
     platform1->m_shape.setFillColor(season_colors[static_cast<int>(map.season)]);
+}
+
+void addStoneWallInGray(const sf::Vector2f& size,const sf::Vector2f& position, Map& map) {
+    const auto platform1 = map.addWall(std::make_unique<Platform>(size,position));
+    platform1->m_shape.setFillColor(GRAY);
+    std::cout << "created gray" << std::endl;
 }
 
 
@@ -24,11 +29,12 @@ void Factory::createMap(Map& map, const Map::Season season) {
         }
         case Map::Season::Winter: {
             createDefaultMap(map);
-            addStoneWallInColor(PLATFORM_SIZE, PLATFORM_POSITION + sf::Vector2f({900,-200}),map);
             break;
         }
         case Map::Season::Spring: {
             createDefaultMap(map);
+            addStoneWallInColor(PLATFORM_SIZE, PLATFORM_POSITION + sf::Vector2f({900,-250}),map);
+
             break;
         }
         case Map::Season::Summer: {

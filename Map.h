@@ -12,7 +12,7 @@ public:
         Spring,
         Summer
     };
-    Map(int index, Map::Season season_type);
+    explicit Map(Map::Season season_type);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
     Season season;

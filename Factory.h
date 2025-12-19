@@ -11,3 +11,7 @@ class Factory {
 public:
     static void createMap(Map& map, Map::Season season);
 };
+
+void createDefaultMap(Map& map);
+void addStoneWallInColor(const sf::Vector2f& size,const sf::Vector2f& position, Map& map);
+void addStoneWallInGray(const sf::Vector2f& size,const sf::Vector2f& position, Map& map);

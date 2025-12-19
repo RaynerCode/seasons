@@ -3,7 +3,7 @@
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr int CAMERA_OFFSET_Y = 700;
 Game::Game() : current_map_index(0),
-m_maps({Map(0,Map::Season::Fall),Map(1,Map::Season::Winter),Map(2,Map::Season::Spring),Map(3,Map::Season::Summer)}) {
+m_maps({Map(Map::Season::Fall),Map(Map::Season::Winter),Map(Map::Season::Spring),Map(Map::Season::Summer)}) {
     for(auto& map: m_maps) {
         Factory::createMap(map, map.season);
     }

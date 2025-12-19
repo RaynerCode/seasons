@@ -2,7 +2,7 @@
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr sf::Vector2f PLAYER_SIZE({50,50});
-constexpr sf::Vector2f PLAYER_INITIAL_POSITION({100,500});
+constexpr sf::Vector2f PLAYER_INITIAL_POSITION({100,600});
 constexpr float PLAYER_VELOCITY_X = 10.f;
 constexpr float PLAYER_VELOCITY_Y = 12.f;
 constexpr float GRAVITY = 20.f;
@@ -42,7 +42,7 @@ std::optional<const Platform*> checkCollisionMap(const sf::Rect<float> rect, Map
 }
 
 sf::Vector2f RectDistance(const sf::Rect<float> rect1, const sf::Rect<float> rect2) {
-    sf::Vector2f distance;
+    sf::Vector2f distance; //right_distance meaning the player is to the right of the object etc.
     const float right_distance = rect1.position.x - (rect2.position.x + rect2.size.x); //positive
     const float left_distance = rect1.position.x + rect1.size.x - rect2.position.x; //negative
     const float bottom_distance = rect1.position.y - (rect2.position.y + rect2.size.y); //positive
@@ -52,8 +52,13 @@ sf::Vector2f RectDistance(const sf::Rect<float> rect1, const sf::Rect<float> rec
     else {
         distance.x = right_distance;
     }
-    if(std::abs(bottom_distance) < std::abs(top_distance))
+    if(std::abs(bottom_distance) < std::abs(top_distance)) {
         distance.y = bottom_distance;
+        if(bottom_distance < 0) {
+            std::cout << "inside object" << std::endl;
+            distance.y *= -1;
+        }
+    }
     else
         distance.y = top_distance;
     return distance;
@@ -80,8 +85,6 @@ void Player::closeGap(const sf::Vector2f& dist,const sf::Vector2f& velocity) {
         return;
     }
     if(std::abs(dist.x) < std::abs(dist.y)) { //should still be in air but now touching problematic rect
-        //const float sign_dist = sign(dist.x);
-        //std::cout << sign_dist << std::endl;
         m_shape.move({-1.f * dist.x, 0});
         m_shape.move({0,velocity.y});
     }
@@ -118,9 +121,11 @@ void markPlatformCollision(const Platform* platform, Player& player) {
 void Player::move(const sf::Vector2f velocity, Map& map) { //basically I am creating another rect that is in the position theoretically will be and collision checking it
     const sf::Rect<float> potential_rect = getPotentialRect(m_shape, velocity);
     if(const auto& problematic_platform = checkCollisionMap(potential_rect, map)) {
+        std::cout << "size y" << problematic_platform.value()->m_shape.getSize().y << std::endl;
         markPlatformCollision(*problematic_platform, *this);
         const auto& problematic_rect = (*problematic_platform)->m_shape.getGlobalBounds();
         const auto dist = RectDistance(m_shape.getGlobalBounds(), problematic_rect);
+        std::cout << "dist y" << dist.y << std::endl;
         closeGap(dist, velocity);
         return;
     }

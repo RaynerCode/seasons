@@ -15,6 +15,8 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+
+
 add_executable(seasons main.cpp game.cpp game.h
         Player.cpp
         Player.h
@@ -24,7 +26,8 @@ add_executable(seasons main.cpp game.cpp game.h
         Platform.h
         Factory.cpp
         Factory.h
-        Factory.h
 )
 target_compile_features(seasons PRIVATE cxx_std_17)
 target_link_libraries(seasons PRIVATE SFML::Graphics)
+
+target_compile_options(seasons PRIVATE -Wall -Wextra -Werror -Wno-error=unused-variable)
