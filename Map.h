@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Platform.h"
 
+
+
 class Map {
 public:
     enum class Season {
@@ -12,10 +14,12 @@ public:
         Spring,
         Summer
     };
-    explicit Map(Map::Season season_type);
+    Season season;
+
+    sf::Vector2u window_size;
+    explicit Map(Map::Season season_type, sf::Vector2u window_size);
     ~Map() = default;
     void Draw(sf::RenderWindow& window);
-    Season season;
     Platform* addWall(std::unique_ptr<Platform> wall);
     Platform& createWall(sf::Vector2f size, sf::Vector2f position);
 

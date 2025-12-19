@@ -4,8 +4,9 @@ constexpr sf::Vector2f WALL_SIZE({20,20});
 constexpr sf::Vector2f OFFSET({500,100});
 
 
-Map::Map(const Map::Season season_type) : season(season_type){
-    m_walls.emplace_back(std::make_unique<Platform>(sf::Vector2f({8000,20}), sf::Vector2f({0,700})));
+Map::Map(Map::Season season_type, sf::Vector2u window_size) : season(season_type), window_size(window_size){
+    std::cout << window_size.x << std::endl;
+    m_walls.emplace_back(std::make_unique<Platform>(sf::Vector2f({static_cast<float>(window_size.x * 10),20}), sf::Vector2f({0,700})));
 }
 
 Platform& Map::createWall(const sf::Vector2f size, const sf::Vector2f position) {

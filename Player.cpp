@@ -204,7 +204,7 @@ void Player::update(Map& map) {
             }
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && (jump_count > 0 || dash_jump_count > 0)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && (jump_count > 0)){// || dash_jump_count > 0)) { //uncomment to enable jump after dash
         jump_count--;
         dash_jump_count--;
         m_velocity.y = -PLAYER_VELOCITY_Y;

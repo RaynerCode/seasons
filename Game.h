@@ -8,7 +8,7 @@ class Game {
 public:
     Game();
     ~Game() = default;
-
+    sf::Vector2u get_window_size() const;
     void Run();
 
 private:

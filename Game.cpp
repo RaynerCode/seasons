@@ -2,9 +2,11 @@
 #include <iostream>
 constexpr int FRAME_RATE_LIMIT = 60;
 constexpr int CAMERA_OFFSET_Y = 700;
+constexpr int FULL_SCREEN_MODE = 5;
+const sf::Vector2u WINDOW_SIZE = sf::VideoMode::getFullscreenModes()[FULL_SCREEN_MODE].size;
 Game::Game() : current_map_index(0),
-m_maps({Map(Map::Season::Fall),Map(Map::Season::Winter),Map(Map::Season::Spring),Map(Map::Season::Summer)}) {
-    for(auto& map: m_maps) {
+m_maps({Map(Map::Season::Fall, WINDOW_SIZE),Map(Map::Season::Winter, WINDOW_SIZE),Map(Map::Season::Spring, WINDOW_SIZE),Map(Map::Season::Summer, WINDOW_SIZE)}) {
+    for(Map& map: m_maps) {
         Factory::createMap(map, map.season);
     }
     std::cout << "Game constructed" << std::endl;
@@ -36,8 +38,11 @@ int handleEvent(sf::RenderWindow& window) {
 
 void Game::Run() {
     static int new_map_index;
-    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[0], "My Game Window", sf::Style::None);
+    sf::RenderWindow m_window(sf::VideoMode::getFullscreenModes()[FULL_SCREEN_MODE], "My Game Window", sf::Style::None);
     m_window.setFramerateLimit(FRAME_RATE_LIMIT);
+    for(Map& map : m_maps) {
+        map.window_size = m_window.getSize();
+    }
     while(m_window.isOpen()){
 
         if((new_map_index = handleEvent(m_window)) >= 0) {
@@ -74,6 +79,13 @@ void Game::Run() {
 
         m_window.display();
     }
+}
+
+sf::Vector2u Game::get_window_size() const {
+    if(m_window.getSize().x > 0) {
+        return m_window.getSize();
+    }
+    return sf::Vector2u({0,0});
 }
 
 
