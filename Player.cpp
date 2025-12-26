@@ -1,22 +1,38 @@
 #include "Player.h"
 constexpr sf::Color GREEN(100,250,50);
 constexpr int FRAME_RATE_LIMIT = 60;
-constexpr sf::Vector2f PLAYER_SIZE({50,50});
-constexpr sf::Vector2f PLAYER_INITIAL_POSITION({100,600});
-constexpr float PLAYER_VELOCITY_X = 10.f;
-constexpr float PLAYER_VELOCITY_Y = 12.f;
-constexpr float GRAVITY = 20.f;
+constexpr sf::Vector2f PLAYER_WINDOW_SIZE_RATIO({38.4,21.6}); //50,50
+sf::Vector2f PLAYER_SIZE;
+constexpr sf::Vector2f PLAYER_INITIAL_POSITION_WINDOW_RATIO({19.2,1.8}); //100,600
+sf::Vector2f PLAYER_INITIAL_POSITION;
+constexpr float PLAYER_VELOCITY_X_WINDOW_RATIO = 192.f; //10
+float PLAYER_VELOCITY_X;
+constexpr float PLAYER_VELOCITY_Y_WINDOW_RATIO = 90.f; //12
+float PLAYER_VELOCITY_Y;
+constexpr float GRAVITY_WINDOW_RATIO = 54.f;
+float GRAVITY;
 constexpr float EPSILON = 0.01f;
 constexpr int DASH_TIME = 10;
 constexpr int DASH_MULTIPLIER = 5;
 
 
 
-Player::Player() : m_shape(PLAYER_SIZE),
-    m_touching(Platform::Type::Stone){
+Player::Player(const sf::Vector2u window_size) : m_shape({static_cast<float>(window_size.y) / PLAYER_WINDOW_SIZE_RATIO.y, static_cast<float>(window_size.y) / PLAYER_WINDOW_SIZE_RATIO.y}),m_touching(Platform::Type::Stone){
+    static int time_initialized = 0;
+    time_initialized++;
+    if(time_initialized >= 2) {
+        std::cout << "player initialized more than once" << std::endl;
+    }
+    PLAYER_SIZE = {static_cast<float>(window_size.y) / PLAYER_WINDOW_SIZE_RATIO.y, static_cast<float>(window_size.y) / PLAYER_WINDOW_SIZE_RATIO.y};
+    //currently player is a square with ratio compatible to window_size.y
+    std::cout << "player size x: " << PLAYER_SIZE.x << "player size y: " << PLAYER_SIZE.y << std::endl;
     m_shape.setFillColor(GREEN);
+    PLAYER_INITIAL_POSITION = {static_cast<float>(window_size.x) / PLAYER_INITIAL_POSITION_WINDOW_RATIO.x, static_cast<float>(window_size.y) / PLAYER_INITIAL_POSITION_WINDOW_RATIO.y};
     m_shape.setPosition(PLAYER_INITIAL_POSITION);
-
+    PLAYER_VELOCITY_X = static_cast<float>(window_size.x) / PLAYER_VELOCITY_X_WINDOW_RATIO;
+    PLAYER_VELOCITY_Y = static_cast<float>(window_size.y) / PLAYER_VELOCITY_Y_WINDOW_RATIO;
+    std::cout << "player velocity x: " << PLAYER_VELOCITY_X << "player velocity y: " << PLAYER_VELOCITY_Y << std::endl;
+    GRAVITY = static_cast<float>(window_size.y) / GRAVITY_WINDOW_RATIO;
 }
 
 void Player::MoveByVelocity(Map& map) {
@@ -100,19 +116,19 @@ void markPlatformCollision(const Platform* platform, Player& player) {
         player.m_touching = Platform::Type::Stone;
     }
     if(platform->getType() == Platform::Type::Vine) {
-        std::cout << "touching Vine" << std::endl;
+        //std::cout << "touching Vine" << std::endl;
         player.m_touching = Platform::Type::Vine;
     }
     if(platform->getType() == Platform::Type::Thorn) {
-        std::cout << "touching Thorn" << std::endl;
+        //std::cout << "touching Thorn" << std::endl;
         player.m_touching = Platform::Type::Thorn;
     }
     if(platform->getType() == Platform::Type::Ice) {
-        std::cout << "touching Ice" << std::endl;
+        //std::cout << "touching Ice" << std::endl;
         player.m_touching = Platform::Type::Ice;
     }
     if(platform->getType() == Platform::Type::Leaf) {
-        std::cout << "touching Leaf!" << std::endl;
+        //std::cout << "touching Leaf!" << std::endl;
         player.m_touching = Platform::Type::Leaf;
     }
 }

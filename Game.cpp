@@ -1,14 +1,16 @@
 #include "Game.h"
 #include <iostream>
 constexpr int FRAME_RATE_LIMIT = 60;
-constexpr int CAMERA_OFFSET_Y = 700;
-constexpr int FULL_SCREEN_MODE = 5;
+constexpr float CAMERA_OFFSET_Y_WINDOW_RATIO = 1.54f;
+float CAMERA_OFFSET_Y;
+constexpr int FULL_SCREEN_MODE = 0; //0-18
 const sf::Vector2u WINDOW_SIZE = sf::VideoMode::getFullscreenModes()[FULL_SCREEN_MODE].size;
-Game::Game() : current_map_index(0),
-m_maps({Map(Map::Season::Fall, WINDOW_SIZE),Map(Map::Season::Winter, WINDOW_SIZE),Map(Map::Season::Spring, WINDOW_SIZE),Map(Map::Season::Summer, WINDOW_SIZE)}) {
+Game::Game() : m_player(WINDOW_SIZE),
+current_map_index(0), m_maps({Map(Map::Season::Fall, WINDOW_SIZE),Map(Map::Season::Winter, WINDOW_SIZE),Map(Map::Season::Spring, WINDOW_SIZE),Map(Map::Season::Summer, WINDOW_SIZE)}) {
     for(Map& map: m_maps) {
         Factory::createMap(map, map.season);
     }
+    CAMERA_OFFSET_Y = static_cast<float>(WINDOW_SIZE.y) / CAMERA_OFFSET_Y_WINDOW_RATIO;
     std::cout << "Game constructed" << std::endl;
 }
 

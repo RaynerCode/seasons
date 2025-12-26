@@ -7,7 +7,7 @@
 
 class Player {
 public:
-    Player();
+    Player(sf::Vector2u window_size);
     ~Player() = default;
 
     void MoveByVelocity(Map& map);
